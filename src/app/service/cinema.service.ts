@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +34,43 @@ export class CinemaService {
 
   payerTickert(value) {
     return this.http.post(this.host+"/payerTicker",value);
+  }
+
+  addVille(f) {
+    return this.http.post(this.host+"/villes",f);
+  }
+
+  deleteVille(v) {
+    const  param=new HttpParams().set('id',v.id);
+    return this.http.delete(this.host+"/villes/"+v.id);
+
+  }
+
+  modiferVille(v) {
+    return this.http.post(this.host+"/villes",v);
+  }
+
+  getCinema(){
+    return this.http.get(this.host+'/cinemas');
+  }
+
+  supCinema(cinema) {
+    return this.http.delete(this.host+"/cinemas/"+cinema.id);
+  }
+
+  addCinemas(c) {
+    return this.http.post(this.host+"/ajouterCinema",c);
+  }
+
+  addSalle(f) {
+    return this.http.post(this.host+"/ajouterSalle",f);
+  }
+
+  getFilms() {
+    return this.http.get(this.host+"/films");
+  }
+
+  addProjection(f) {
+    return this.http.post(this.host+"/addProj",f);
   }
 }

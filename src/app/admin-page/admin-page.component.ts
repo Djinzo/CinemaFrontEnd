@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import {CinemaService} from '../service/cinema.service';
 
 @Component({
-  selector: 'app-cinema',
-  templateUrl: './cinema.component.html',
-  styleUrls: ['./cinema.component.css']
+  selector: 'app-admin-page',
+  templateUrl: './admin-page.component.html',
+  styleUrls: ['./admin-page.component.css']
 })
-export class CinemaComponent implements OnInit {
+export class AdminPageComponent implements OnInit {
+
   public villes;
   public cinema;
   public selectedVille;
@@ -14,16 +15,25 @@ export class CinemaComponent implements OnInit {
   public selectedProjetcion;
   public tickets;
   private ListselectedTicket= [];
-  public auth=false;
+  public auth=true;
+  public selectedCinema;
+  public selectedSalle;
+  public films;
+  selectedFilm;
   constructor(private cinemaService: CinemaService) { }
 
   ngOnInit(): void {
     this.cinemaService.getVilles().subscribe(data=>{
       this.villes=data;
+      console.log(data);
     },err=>{
       console.log(err);
-    })
-
+    });
+    this.cinemaService.getFilms().subscribe(data=>{
+      this.films=data;
+    },err=>{
+      console.log(err);
+    });
   }
 
   onGetCinemas(v){
@@ -37,6 +47,7 @@ export class CinemaComponent implements OnInit {
   }
 
   onGetSalles(c){
+    this.selectedCinema=c;
     this.cinemaService.getSalles(c._links.salles.href).subscribe(data=>{
       this.salles=data;
       this.salles._embedded.salles.forEach(salle=>{
@@ -63,13 +74,13 @@ export class CinemaComponent implements OnInit {
   }
 
   onSelectTicket(t) {
-   if(!t.selected){
-     t.selected=!t.selected;
-     this.ListselectedTicket.push(t);
-   }else {
-     t.selected=!t.selected;
-     this.ListselectedTicket.splice(this.ListselectedTicket.indexOf(t),1);
-   }
+    if(!t.selected){
+      t.selected=!t.selected;
+      this.ListselectedTicket.push(t);
+    }else {
+      t.selected=!t.selected;
+      this.ListselectedTicket.splice(this.ListselectedTicket.indexOf(t),1);
+    }
 
   }
 
@@ -104,9 +115,63 @@ export class CinemaComponent implements OnInit {
     console.log(value);
     this.cinemaService.addVille(value).subscribe(data=>{
       alert("added");
+      this.villes=null;
+      this.ngOnInit();
     },err=>{
       console.log(err);
     })
 
+  }
+
+  onSupVilles(v) {
+
+    this.cinemaService.deleteVille(v).subscribe(data=>{
+      alert("deleted");
+      this.villes=null;
+      this.ngOnInit();
+    },err=>{
+      console.log(err);
+    });
+
+  }
+
+  onajouterCinema(f) {
+    f.ville=this.selectedVille.id
+    f.nbSalle=0;
+    console.log(f);
+    this.cinemaService.addCinemas(f).subscribe(data=>{
+      alert("added");
+      this.cinema=null;
+      this.onGetCinemas(this.selectedVille);
+    },err=>{
+      console.log(err);
+    })
+
+  }
+
+  onajouerSalle(f) {
+    f.cinema=this.selectedCinema.id;
+    this.cinemaService.addSalle(f).subscribe(data=>{
+      alert("added");
+    },err=>{
+      console.log(err);
+    });
+  }
+
+  onAjouterProjection(value) {
+
+    value.salle=this.selectedSalle.id;
+    value.HeureDebut="25:20";
+    value.film=this.selectedFilm;
+    console.log(value);
+    this.cinemaService.addProjection(value).subscribe(data=>{
+      alert("added");
+    },err=>{
+      console.log(err);
+    });
+  }
+
+  onselectedSalle(s) {
+    this.selectedSalle=s;
   }
 }

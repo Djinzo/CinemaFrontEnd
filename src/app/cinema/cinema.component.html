@@ -4,6 +4,15 @@
       <li class="list-group-item {{selectedVille===v?'active':''}}" *ngFor="let v of villes._embedded.villes"
           (click)="onGetCinemas(v)">{{v.name}}</li>
     </ul>
+    <div *ngIf="auth" >
+      <form #f="ngForm" (ngSubmit)="onAjouterVile(f.value)">
+        <div class="form-group">
+          <label >Email address</label>
+          <input type="text" class="form-control" name="name" ngModel="">
+        </div>
+      </form>
+    <button type="submit" class="btn btn-info" (click)="onAjouterVile(f.value)">ajouter</button>
+    </div>
   </div>
   <div class="col-md-9">
     <div class="panel panel-default" *ngIf="cinema">
